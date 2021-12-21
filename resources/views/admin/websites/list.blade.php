@@ -9,9 +9,6 @@
     <div class="flex-grow-1">
         <h2 class="mb-3 d-inline-block">{{ __('Websites') }}</h2>
     </div>
-    <div>
-        <a href="{{ route('websites.new') }}" class="btn btn-primary mb-3">{{ __('New') }}</a>
-    </div>
 </div>
 
 <div class="card border-0 shadow-sm">
@@ -78,8 +75,12 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-auto d-flex align-items-center">
-                            <a href="#" class="btn btn-outline-primary btn-sm invisible">{{ __('Edit') }}</a>
+                        <div class="col-auto">
+                            <div class="form-row">
+                                <div class="col">
+                                    <div class="invisible btn d-flex align-items-center btn-sm text-primary">@include('icons.horizontal-menu', ['class' => 'fill-current width-4 height-4'])&#8203;</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -101,8 +102,12 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-auto d-flex align-items-center">
-                                <a href="{{ route('admin.websites.edit', $website->id) }}" class="btn btn-outline-primary btn-sm">{{ __('Edit') }}</a>
+                            <div class="col-auto">
+                                <div class="form-row">
+                                    <div class="col">
+                                        @include('websites.partials.menu')
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

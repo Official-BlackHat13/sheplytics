@@ -68,7 +68,11 @@
                     <div class="row align-items-center">
                         <div class="col">{{ __('Name') }}</div>
                         <div class="col-auto">
-                            <div class="btn btn-outline-primary btn-sm invisible">{{ __('Edit') }}</div>
+                            <div class="form-row">
+                                <div class="col">
+                                    <div class="invisible btn d-flex align-items-center btn-sm text-primary">@include('icons.horizontal-menu', ['class' => 'fill-current width-4 height-4'])&#8203;</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -82,7 +86,11 @@
                                 </div>
                             </div>
                             <div class="col-auto">
-                                <a href="{{ route('admin.pages.edit', $page->id) }}" class="btn btn-outline-primary btn-sm">{{ __('Edit') }}</a>
+                                <div class="form-row">
+                                    <div class="col">
+                                        @include('admin.pages.partials.menu')
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -27,32 +27,7 @@
             </div>
         </div>
 
-        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#regenerate-modal">{{ __('Regenerate') }}</button>
-    </div>
-</div>
-
-<div class="modal fade" id="regenerate-modal" tabindex="-1" role="dialog" aria-labelledby="regenerate-modal-label" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content border-0 shadow">
-            <div class="modal-header">
-                <h6 class="modal-title" id="regenerate-modal-label">{{ __('Regenerate') }}</h6>
-                <button type="button" class="close d-flex align-items-center justify-content-center width-12 height-14" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true" class="d-flex align-items-center">@include('icons.close', ['class' => 'fill-current width-3 height-3'])</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div>{{ __('Are you sure you want to regenerate your API key?') }}</div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('Close') }}</button>
-                <form action="{{ route('account.api') }}" method="post" enctype="multipart/form-data">
-
-                    @csrf
-
-                    <button type="submit" class="btn btn-danger">{{ __('Regenerate') }}</button>
-                </form>
-            </div>
-        </div>
+        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modal" data-action="{{ route('account.api') }}" data-button="btn btn-danger" data-title="{{ __('Regenerate') }}" data-text="{{ __('Are you sure you want to regenerate your API key?') }}">{{ __('Regenerate') }}</button>
     </div>
 </div>
 

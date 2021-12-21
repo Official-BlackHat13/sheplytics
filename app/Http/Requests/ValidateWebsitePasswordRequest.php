@@ -3,10 +3,16 @@
 namespace App\Http\Requests;
 
 use App\Rules\ValidateWebsitePasswordRule;
+use App\Website;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ValidateWebsitePasswordRequest extends FormRequest
 {
+    /**
+     * @var
+     */
+    var $website;
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -14,6 +20,8 @@ class ValidateWebsitePasswordRequest extends FormRequest
      */
     public function authorize()
     {
+        $this->website = Website::where('url', $this->route('id'))->firstOrFail();
+
         return true;
     }
 
@@ -25,7 +33,7 @@ class ValidateWebsitePasswordRequest extends FormRequest
     public function rules()
     {
         return [
-            'password' => ['required', new ValidateWebsitePasswordRule($this->route('id'))]
+            'password' => ['required', new ValidateWebsitePasswordRule($this->website)]
         ];
     }
 }

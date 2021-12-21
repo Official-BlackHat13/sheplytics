@@ -579,5 +579,8 @@
     "Warning": "Warning",
     "Success": "Success",
     "No current data": "No current data",
-    "Get back your account.": "Get back your account."
+    "Get back your account.": "Get back your account.",
+    "Are you sure you want to approve :name?": "Are you sure you want to approve :name?",
+    "Disabling this account will cancel any active subscription.": "Disabling this account will cancel any active subscription.",
+    "To block entire IP classes, use the CIDR notation.": "To block entire IP classes, use the CIDR notation."
 }

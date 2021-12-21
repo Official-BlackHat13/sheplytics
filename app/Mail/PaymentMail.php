@@ -33,11 +33,23 @@ class PaymentMail extends Mailable
      */
     public function build()
     {
-        return $this->subject(formatTitle([$this->payment->status == 'completed' ? __('Payment completed') : __('Payment cancelled'), config('settings.title')]))
-            ->markdown('vendor.notifications.email', [
-                'introLines' => [$this->payment->status == 'completed' ? (__('The payment was successful.') . ' ' . __('Thank you!')) : __('The payment was cancelled.')],
+        if ($this->payment->status == 'completed') {
+            $title = __('Payment completed');
+
+            $data = [
+                'introLines' => [__('The payment was successful.') . ' ' . __('Thank you!')],
                 'actionText' => __('Invoice'),
-                'actionUrl' => route('account.invoices.show', [$this->payment->id])
-            ]);
+                'actionUrl' => route('account.invoices.show', [$this->payment->id]),
+            ];
+        } else {
+            $title = __('Payment cancelled');
+
+            $data = [
+                'introLines' => [__('The payment was cancelled.')],
+            ];
+        }
+
+        return $this->subject(formatTitle([$title, config('settings.title')]))
+            ->markdown('vendor.notifications.email', $data);
     }
 }

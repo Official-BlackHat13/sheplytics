@@ -55,5 +55,6 @@
         </div>
     </div>
 </div>
-@include('shared.sidebars.user')
 @endsection
+
+@include('shared.sidebars.user')

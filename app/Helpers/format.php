@@ -20,14 +20,16 @@ function formatTitle($value = null)
  *
  * @param $amount
  * @param $currency
+ * @param bool $separator
+ * @param bool $translate
  * @return string
  */
-function formatMoney($amount, $currency)
+function formatMoney($amount, $currency, $separator = true, $translate = true)
 {
     if (in_array(strtoupper($currency), config('currencies.zero_decimals'))) {
-        return number_format($amount, 0, __('.'), __(','));
+        return number_format($amount, 0, $translate ? __('.') : '.', $separator ? ($translate ? __(',') : ',') : false);
     } else {
-        return number_format($amount, 2, __('.'), __(','));
+        return number_format($amount, 2, $translate ? __('.') : '.', $separator ? ($translate ? __(',') : ',') : false);
     }
 }
 
@@ -157,4 +159,24 @@ function formatFlag($value)
     } else {
         return 'unknown';
     }
+}
+
+/**
+ * Convert a number into a readable one.
+ *
+ * @param   int   $number  The number to be transformed
+ * @return  string
+ */
+function shortenNumber($number)
+{
+    $suffix = ["", "K", "M", "B"];
+    $precision = 1;
+    for($i = 0; $i < count($suffix); $i++) {
+        $divide = $number / pow(1000, $i);
+        if($divide < 1000) {
+            return round($divide, $precision).$suffix[$i];
+        }
+    }
+
+    return $number;
 }

@@ -192,22 +192,19 @@ class AccountController extends Controller
     }
 
     /**
-     * Update the Payment.
+     * Cancel the Payment.
      *
      * @param Request $request
      * @param $id
      * @return mixed
      */
-    public function updatePayment(Request $request, $id)
+    public function cancelPayment(Request $request, $id)
     {
         $payment = Payment::where([['id', '=', $id], ['status', '=', 'pending'], ['user_id', '=', $request->user()->id]])->firstOrFail();
+        $payment->status = 'cancelled';
+        $payment->save();
 
-        if ($request->input('status') == 'cancelled') {
-            $payment->status = $request->input('status');
-            $payment->save();
-        }
-
-        return back()->with('success', __('Settings saved.'));
+        return redirect()->route('account.payments.edit', $id)->with('success', __('Settings saved.'));
     }
 
     /**

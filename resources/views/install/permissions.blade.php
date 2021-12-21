@@ -30,9 +30,9 @@
                                 <span class="{{ (__('lang_dir') == 'rtl' ? 'ml-3' : 'mr-3') }}">775</span>
 
                                 @if($writable)
-                                    @include('icons/checkmark', ['class' => 'text-success width-4 height-4 fill-current'])
+                                    @include('icons.checkmark', ['class' => 'text-success width-4 height-4 fill-current'])
                                 @else
-                                    @include('icons/close', ['class' => 'text-danger width-4 height-4 fill-current pt-1'])
+                                    @include('icons.close', ['class' => 'text-danger width-4 height-4 fill-current'])
                                 @endif
                             </div>
                         </div>

@@ -171,10 +171,12 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col-auto d-flex align-items-center">
-                                                <a href="#" class="btn btn-sm text-primary invisible">@include('icons.stats', ['class' => 'fill-current width-4 height-4'])&#8203;</a>
-
-                                                <a href="#" class="btn btn-sm text-primary d-flex align-items-center invisible {{ (__('lang_dir') == 'rtl' ? 'mr-3' : 'ml-3') }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@include('icons.horizontal-menu', ['class' => 'fill-current width-4 height-4'])&#8203;</a>
+                                            <div class="col-auto">
+                                                <div class="form-row">
+                                                    <div class="col">
+                                                        <div class="invisible btn d-flex align-items-center btn-sm text-primary">@include('icons.horizontal-menu', ['class' => 'fill-current width-4 height-4'])&#8203;</div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -185,7 +187,7 @@
                                                 <div class="col text-truncate">
                                                     <div class="row text-truncate">
                                                         <div class="col-12 col-lg-4 d-flex align-items-center text-truncate">
-                                                            <img src="https://icons.duckduckgo.com/ip3/{{ $website->url }}.ico" rel="noreferrer" class="width-4 height-4 {{ (__('lang_dir') == 'rtl' ? 'ml-2' : 'mr-2') }}"> <div class="text-truncate" dir="ltr"><a href="{{ route('stats.overview', ['id' => $website->url, 'from' => $range['from'], 'to' => $range['to']]) }}">{{ $website->url }}</a></div>
+                                                            <img src="https://icons.duckduckgo.com/ip3/{{ $website->url }}.ico" rel="noreferrer" class="width-4 height-4 {{ (__('lang_dir') == 'rtl' ? 'ml-3' : 'mr-3') }}"> <div class="text-truncate" dir="ltr"><a href="{{ route('stats.overview', ['id' => $website->url, 'from' => $range['from'], 'to' => $range['to']]) }}">{{ $website->url }}</a></div>
                                                         </div>
 
                                                         <div class="col-12 col-lg-4 d-flex align-items-center font-weight-medium">
@@ -203,12 +205,12 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="col-auto d-flex align-items-center">
-                                                    <a href="{{ route('stats.overview', ['id' => $website->url, 'from' => $range['from'], 'to' => $range['to']]) }}" class="btn btn-sm text-primary" data-enable="tooltip" title="{{ __('Stats') }}">@include('icons.stats', ['class' => 'fill-current width-4 height-4'])&#8203;</a>
-
-                                                    <a href="#" class="btn btn-sm text-primary d-flex align-items-center {{ (__('lang_dir') == 'rtl' ? 'mr-3' : 'ml-3') }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@include('icons.horizontal-menu', ['class' => 'fill-current width-4 height-4'])&#8203;</a>
-
-                                                    @include('shared.dropdowns.website', ['options' => ['edit' => true, 'stats' => true, 'open' => true, 'delete' => true]])
+                                                <div class="col-auto">
+                                                    <div class="form-row">
+                                                        <div class="col">
+                                                            @include('websites.partials.menu')
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -234,6 +236,6 @@
         </div>
     </div>
 </div>
-@include('shared.sidebars.user')
-@include('shared.modals.delete-website')
 @endsection
+
+@include('shared.sidebars.user')

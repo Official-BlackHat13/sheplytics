@@ -121,21 +121,6 @@ $font-weights: (
 }
 
 
-// Select Text
-
-$select-text: (
-  none, text, all, auto
-) !default;
-
-@each $value in $select-text {
-  .select-#{$value} {
-    -webkit-user-select: #{$value} !important;
-    -ms-user-select: #{$value} !important;
-    user-select: #{$value} !important;
-  }
-}
-
-
 // Borders
 
 @each $breakpoint in map-keys($grid-breakpoints) {

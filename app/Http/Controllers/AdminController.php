@@ -467,10 +467,30 @@ class AdminController extends Controller
      */
     public function updateLicense(UpdateSettingLicenseRequest $request)
     {
-		Setting::where('name', '=', 'license_key')->update(['value' => $request->input('license_key')]);
-		Setting::where('name', '=', 'license_type')->update(['value' => 'Extended']);
+        $httpClient = new HttpClient(['timeout' => 10/*, 'verify' => false*/]);
 
-		return redirect()->route('admin.dashboard');
+        try {
+            $response = $httpClient->request('POST', 'https://api.lunatio.com/api/v1/license/validate',
+                [
+                    'form_params' => [
+                        'license_id' => $request->input('license_key'),
+                        'product_id' => 6,
+                        'url' => env('APP_URL')
+                    ]
+                ]
+            );
+
+            $output = json_decode($response->getBody()->getContents());
+
+            if ($output->status == 200) {
+                Setting::where('name', '=', 'license_key')->update(['value' => $request->input('license_key')]);
+                Setting::where('name', '=', 'license_type')->update(['value' => $output->type]);
+            }
+
+            return redirect()->route('admin.dashboard');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
     }
 
     /**
@@ -541,72 +561,90 @@ class AdminController extends Controller
     {
         $payment = Payment::where('id', $id)->firstOrFail();
 
-        return view('admin.content', ['view' => 'account.payments.edit', 'admin' => true, 'payment' => $payment]);
+        return view('admin.content', ['view' => 'account.payments.edit', 'payment' => $payment]);
     }
 
     /**
-     * Update the Payment.
+     * Approve the Payment.
      *
      * @param Request $request
      * @param $id
      * @return mixed
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function updatePayment(Request $request, $id)
+    public function approvePayment(Request $request, $id)
     {
         $payment = Payment::where([['id', '=', $id], ['status', '=', 'pending']])->firstOrFail();
 
         $user = User::where('id', $payment->user_id)->first();
 
-        if (in_array($request->input('status'), ['completed', 'cancelled'])) {
-            $payment->status = $request->input('status');
-            $payment->save();
+        $payment->status = 'completed';
+        $payment->save();
 
-            if ($request->input('status') == 'completed') {
-                // Assign the plan to the user
-                if ($user) {
-                    if ($user->plan_subscription_id) {
-                        $user->planSubscriptionCancel();
-                    }
+        // Assign the plan to the user
+        if ($user) {
+            if ($user->plan_subscription_id) {
+                $user->planSubscriptionCancel();
+            }
 
-                    // If the user had tracking disabled previously
-                    if (!$user->can_track) {
-                        $user->can_track = true;
-                    }
+            $user->plan_id = $payment->plan->id;
+            $user->plan_interval = $payment->interval;
+            $user->plan_currency = $payment->currency;
+            $user->plan_amount = $payment->amount;
+            $user->plan_payment_processor = $payment->processor;
+            $user->plan_subscription_id = null;
+            $user->plan_subscription_status = null;
+            $user->plan_created_at = Carbon::now();
+            $user->plan_recurring_at = null;
+            $user->plan_trial_ends_at = $user->plan_trial_ends_at ? Carbon::now() : null;
+            $user->plan_ends_at = $payment->interval == 'month' ? Carbon::now()->addMonth() : Carbon::now()->addYear();
+            $user->save();
 
-                    $user->plan_id = $payment->plan->id;
-                    $user->plan_interval = $payment->interval;
-                    $user->plan_currency = $payment->currency;
-                    $user->plan_amount = $payment->amount;
-                    $user->plan_payment_processor = $payment->processor;
-                    $user->plan_subscription_id = null;
-                    $user->plan_subscription_status = null;
-                    $user->plan_created_at = Carbon::now();
-                    $user->plan_recurring_at = null;
-                    $user->plan_trial_ends_at = $user->plan_trial_ends_at ? Carbon::now() : null;
-                    $user->plan_ends_at = $payment->interval == 'month' ? Carbon::now()->addMonth() : Carbon::now()->addYear();
-                    $user->save();
+            // If a coupon was used
+            if (isset($payment->coupon->id)) {
+                $coupon = Coupon::find($payment->coupon->id);
 
-                    // If a coupon was used
-                    if (isset($payment->coupon->id)) {
-                        $coupon = Coupon::find($payment->coupon->id);
-
-                        // If a coupon was found
-                        if ($coupon) {
-                            // Increase the coupon usage
-                            $coupon->increment('redeems', 1);
-                        }
-                    }
-
-                    // Attempt to send the payment confirmation email
-                    try {
-                        Mail::to($user->email)->locale($user->locale)->send(new PaymentMail($payment));
-                    }
-                    catch (\Exception $e) {}
+                // If a coupon was found
+                if ($coupon) {
+                    // Increase the coupon usage
+                    $coupon->increment('redeems', 1);
                 }
             }
+
+            // Attempt to send an email notification
+            try {
+                Mail::to($user->email)->locale($user->locale)->send(new PaymentMail($payment));
+            }
+            catch (\Exception $e) {}
         }
 
-        return back()->with('success', __('Settings saved.'));
+        return redirect()->route('admin.payments.edit', $id)->with('success', __('Settings saved.'));
+    }
+
+    /**
+     * Cancel the Payment.
+     *
+     * @param Request $request
+     * @param $id
+     * @return mixed
+     */
+    public function cancelPayment(Request $request, $id)
+    {
+        $payment = Payment::where([['id', '=', $id], ['status', '=', 'pending']])->firstOrFail();
+        $payment->status = 'cancelled';
+        $payment->save();
+
+        $user = User::where('id', $payment->user_id)->first();
+
+        if ($user) {
+            // Attempt to send an email notification
+            try {
+                Mail::to($user->email)->locale($user->locale)->send(new PaymentMail($payment));
+            }
+            catch (\Exception $e) {}
+        }
+
+        return redirect()->route('admin.payments.edit', $id)->with('success', __('Settings saved.'));
     }
 
     /**
@@ -757,7 +795,7 @@ class AdminController extends Controller
         $plan->features = $request->input('features');
         $plan->save();
 
-        return back()->with('success', __('Settings saved.'));
+        return redirect()->route('admin.plans.edit', $id)->with('success', __('Settings saved.'));
     }
 
     /**
@@ -773,12 +811,12 @@ class AdminController extends Controller
 
         // Do not delete the default plan
         if (!$plan->hasPrice()) {
-            return redirect()->route('admin.plans')->with('error', __('The default plan can\'t be disabled.'));
+            return redirect()->route('admin.plans.edit', $id)->with('error', __('The default plan can\'t be disabled.'));
         }
 
         $plan->delete();
 
-        return back()->with('success', __('Settings saved.'));
+        return redirect()->route('admin.plans.edit', $id)->with('success', __('Settings saved.'));
     }
 
     /**
@@ -792,7 +830,7 @@ class AdminController extends Controller
         $plan = Plan::withTrashed()->findOrFail($id);
         $plan->restore();
 
-        return back()->with('success', __('Settings saved.'));
+        return redirect()->route('admin.plans.edit', $id)->with('success', __('Settings saved.'));
     }
 
     /**
@@ -891,7 +929,7 @@ class AdminController extends Controller
 
         $coupon->save();
 
-        return back()->with('success', __('Settings saved.'));
+        return redirect()->route('admin.coupons.edit', $id)->with('success', __('Settings saved.'));
     }
 
     /**
@@ -905,7 +943,7 @@ class AdminController extends Controller
         $coupon = Coupon::findOrFail($id);
         $coupon->delete();
 
-        return back()->with('success', __('Settings saved.'));
+        return redirect()->route('admin.coupons.edit', $id)->with('success', __('Settings saved.'));
     }
 
     /**
@@ -919,7 +957,7 @@ class AdminController extends Controller
         $coupon = Coupon::withTrashed()->findOrFail($id);
         $coupon->restore();
 
-        return back()->with('success', __('Settings saved.'));
+        return redirect()->route('admin.coupons.edit', $id)->with('success', __('Settings saved.'));
     }
 
     /**
@@ -1014,7 +1052,7 @@ class AdminController extends Controller
 
         $taxRate->save();
 
-        return back()->with('success', __('Settings saved.'));
+        return redirect()->route('admin.tax_rates.edit', $id)->with('success', __('Settings saved.'));
     }
 
     /**
@@ -1028,7 +1066,7 @@ class AdminController extends Controller
         $taxRate = TaxRate::findOrFail($id);
         $taxRate->delete();
 
-        return back()->with('success', __('Settings saved.'));
+        return redirect()->route('admin.tax_rates.edit', $id)->with('success', __('Settings saved.'));
     }
 
     /**
@@ -1042,7 +1080,7 @@ class AdminController extends Controller
         $taxRate = TaxRate::withTrashed()->findOrFail($id);
         $taxRate->restore();
 
-        return back()->with('success', __('Settings saved.'));
+        return redirect()->route('admin.tax_rates.edit', $id)->with('success', __('Settings saved.'));
     }
 
     /**
@@ -1177,7 +1215,7 @@ class AdminController extends Controller
 
             // If the language to be deletes is set as default
             if ($language->default) {
-                $redirect = redirect()->route('admin.languages')->with('error', __('The default language can\'t be deleted.'));
+                $redirect = redirect()->route('admin.languages.edit', $id)->with('error', __('The default language can\'t be deleted.'));
             } else {
                 // Delete the database record
                 $language->delete();
@@ -1188,7 +1226,7 @@ class AdminController extends Controller
                 $redirect = redirect()->route('admin.languages')->with('success', __(':name has been deleted.', ['name' => $language->name]));
             }
         } else {
-            $redirect = redirect()->route('admin.languages')->with('error', __('The default language can\'t be deleted.'));
+            $redirect = redirect()->route('admin.languages.edit', $id)->with('error', __('The default language can\'t be deleted.'));
         }
 
         return $redirect;
@@ -1253,7 +1291,7 @@ class AdminController extends Controller
 
         $plans = Plan::all();
 
-        return view('admin.content', ['view' => 'account.profile', 'admin' => true, 'user' => $user, 'stats' => $stats, 'plans' => $plans]);
+        return view('admin.content', ['view' => 'account.profile', 'user' => $user, 'stats' => $stats, 'plans' => $plans]);
     }
 
     /**
@@ -1292,12 +1330,12 @@ class AdminController extends Controller
         $user = User::withTrashed()->findOrFail($id);
 
         if ($request->user()->id == $user->id && $request->input('role') == 0) {
-            return back()->with('error', __('Operation denied.'));
+            return redirect()->route('admin.users.edit', $id)->with('error', __('Operation denied.'));
         }
 
-        $this->userUpdate($request, $user, true);
+        $this->userUpdate($request, $user);
 
-        return back()->with('success', __('Settings saved.'));
+        return redirect()->route('admin.users.edit', $id)->with('success', __('Settings saved.'));
     }
 
     /**
@@ -1312,7 +1350,7 @@ class AdminController extends Controller
         $user = User::withTrashed()->findOrFail($id);
 
         if ($request->user()->id == $user->id && $user->role == 1) {
-            return back()->with('error', __('Operation denied.'));
+            return redirect()->route('admin.users.edit', $id)->with('error', __('Operation denied.'));
         }
 
         $user->forceDelete();
@@ -1333,7 +1371,7 @@ class AdminController extends Controller
         $user = User::findOrFail($id);
 
         if ($request->user()->id == $user->id && $user->role == 1) {
-            return back()->with('error', __('Operation denied.'));
+            return redirect()->route('admin.users.edit', $id)->with('error', __('Operation denied.'));
         }
 
         $user->delete();
@@ -1437,7 +1475,7 @@ class AdminController extends Controller
 
         $page->save();
 
-        return back()->with('success', __('Settings saved.'));
+        return redirect()->route('admin.pages.edit', $id)->with('success', __('Settings saved.'));
     }
 
     /**
@@ -1500,7 +1538,7 @@ class AdminController extends Controller
     {
         $website = Website::where('id', $id)->firstOrFail();
 
-        return view('admin.content', ['view' => 'websites.edit', 'admin' => true, 'website' => $website]);
+        return view('admin.content', ['view' => 'websites.edit', 'website' => $website]);
     }
 
     /**
@@ -1516,7 +1554,7 @@ class AdminController extends Controller
 
         $this->websiteUpdate($request, $website);
 
-        return back()->with('success', __('Settings saved.'));
+        return redirect()->route('admin.websites.edit', $id)->with('success', __('Settings saved.'));
     }
 
     /**

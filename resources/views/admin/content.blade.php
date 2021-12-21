@@ -6,5 +6,5 @@
         @include($view)
     </div>
 </div>
-@include('admin.sidebar')
 @endsection
+@include('admin.sidebar')

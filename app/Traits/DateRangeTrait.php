@@ -54,7 +54,7 @@ trait DateRangeTrait
     }
 
     /**
-     * Calculate all the possible dates between two time frames
+     * Calculate all the possible dates between two time frames.
      *
      * @param $to
      * @param $from

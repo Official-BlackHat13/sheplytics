@@ -2,11 +2,11 @@
 
 namespace App\Http\Requests\API;
 
-use App\Http\Requests\StoreWebsiteRequest as BaseCreateWebsiteRequest;
+use App\Http\Requests\StoreWebsiteRequest as BaseStoreWebsiteRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
 
-class StoreWebsiteRequest extends BaseCreateWebsiteRequest
+class StoreWebsiteRequest extends BaseStoreWebsiteRequest
 {
     /**
      * Handle a failed validation attempt.

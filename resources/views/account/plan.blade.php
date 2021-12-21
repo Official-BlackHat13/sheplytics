@@ -65,34 +65,8 @@
             </div>
 
             @if($user->plan_recurring_at)
-                <button type="button" class="btn btn-outline-danger mb-3" data-toggle="modal" data-target="#cancel-modal">{{ __('Cancel') }}</button>
+                <button type="button" class="btn btn-outline-danger mb-3" data-toggle="modal" data-target="#modal" data-action="{{ route('account.plan') }}" data-button="btn btn-danger" data-title="{{ __('Cancel') }}" data-text="{{ __('You\'ll continue to have access to the features you\'ve paid for until the end of your billing cycle.') }}" data-sub-text="{{ __('Are you sure you want to cancel :name?', ['name' => $user->plan->name]) }}">{{ __('Cancel') }}</button>
             @endif
         </form>
-    </div>
-</div>
-
-<div class="modal fade" id="cancel-modal" tabindex="-1" role="dialog" aria-labelledby="cancel-modal-label" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content border-0 shadow">
-            <div class="modal-header">
-                <h6 class="modal-title" id="cancel-modal-label">{{ __('Cancel') }}</h6>
-                <button type="button" class="close d-flex align-items-center justify-content-center width-12 height-14" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true" class="d-flex align-items-center">@include('icons.close', ['class' => 'fill-current width-3 height-3'])</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-3">{{ __('You\'ll continue to have access to the features you\'ve paid for until the end of your billing cycle.') }}</div>
-                <div>{{ __('Are you sure you want to cancel :name?', ['name' => $user->plan->name]) }}</div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('Close') }}</button>
-                <form action="{{ route('account.plan') }}" method="post" enctype="multipart/form-data">
-
-                    @csrf
-
-                    <button type="submit" class="btn btn-danger">{{ __('Cancel') }}</button>
-                </form>
-            </div>
-        </div>
     </div>
 </div>

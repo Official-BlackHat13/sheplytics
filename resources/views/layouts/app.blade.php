@@ -17,6 +17,7 @@
         <div class="d-flex flex-column flex-fill @auth content @endauth">
             @yield('content')
 
+            @include('shared.modals.confirmation')
             @include('shared.footer')
         </div>
     </body>

@@ -10,7 +10,20 @@
 
 <div class="card border-0 shadow-sm mb-3">
     <div class="card-header align-items-center">
-        <div class="font-weight-medium py-1">{{ __('Language') }}</div>
+        <div class="row">
+            <div class="col">
+                <div class="font-weight-medium py-1">
+                    {{ __('Languages') }}
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="form-row">
+                    <div class="col">
+                        @include('admin.languages.partials.menu')
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="card-body">
 
@@ -38,39 +51,7 @@
                         </div>
                     </div>
 
-                    <div class="row mt-3">
-                        <div class="col">
-                            <button type="submit" name="submit" class="btn btn-primary">{{ __('Save') }}</button>
-                        </div>
-                        <div class="col-auto">
-                            <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#delete-modal" @if($language->default) disabled @endif>{{ __('Delete') }}</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="delete-modal" tabindex="-1" role="dialog" aria-labelledby="delete-modal-label" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content border-0 shadow">
-            <div class="modal-header">
-                <h6 class="modal-title" id="delete-modal-label">{{ __('Delete') }}</h6>
-                <button type="button" class="close d-flex align-items-center justify-content-center width-12 height-14" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true" class="d-flex align-items-center">@include('icons.close', ['class' => 'fill-current width-3 height-3'])</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                {{ __('Are you sure you want to delete :name?', ['name' => $language->name]) }}
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('Close') }}</button>
-                <form action="{{ route('admin.languages.destroy', $language->id) }}" method="post" enctype="multipart/form-data">
-
-                    @csrf
-
-                    <button type="submit" class="btn btn-danger">{{ __('Delete') }}</button>
+                    <button type="submit" name="submit" class="btn btn-primary">{{ __('Save') }}</button>
                 </form>
             </div>
         </div>

@@ -20,9 +20,9 @@
                         <div class="col-auto d-flex align-items-center">
                             @if($type == 'php')
                                 @if(version_compare(PHP_VERSION, config('installer.php_version')) >= 0)
-                                    @include('icons/checkmark', ['class' => 'text-success width-4 height-4 fill-current'])
+                                    @include('icons.checkmark', ['class' => 'text-success width-4 height-4 fill-current'])
                                 @else
-                                    @include('icons/close', ['class' => 'text-danger width-4 height-4 fill-current pt-1'])
+                                    @include('icons.close', ['class' => 'text-danger width-4 height-4 fill-current'])
                                 @endif
                             @endif
                         </div>
@@ -37,9 +37,9 @@
                             </div>
                             <div class="col-auto d-flex align-items-center">
                                 @if($enabled)
-                                    @include('icons/checkmark', ['class' => 'text-success width-4 height-4 fill-current'])
+                                    @include('icons.checkmark', ['class' => 'text-success width-4 height-4 fill-current'])
                                 @else
-                                    @include('icons/close', ['class' => 'text-danger width-4 height-4 fill-current pt-1'])
+                                    @include('icons.close', ['class' => 'text-danger width-4 height-4 fill-current'])
                                 @endif
                             </div>
                         </div>

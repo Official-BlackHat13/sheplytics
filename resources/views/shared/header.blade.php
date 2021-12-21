@@ -59,24 +59,24 @@
                         </div>
                     </a>
                     <div class="close slide-menu-toggle cursor-pointer d-lg-none d-flex align-items-center {{ (__('lang_dir') == 'rtl' ? 'mr-auto' : 'ml-auto') }} px-4 py-2">
-                        @include('icons.close', ['class' => 'fill-current width-3 height-3'])
+                        @include('icons.close', ['class' => 'fill-current width-4 height-4'])
                     </div>
                 </div>
             </div>
 
-            <div class="sidebar-section flex-grow-1 overflow-auto sidebar">
-                <div class="d-flex align-items-center">
-                    <div class="py-3 {{ (__('lang_dir') == 'rtl' ? 'pr-4 pl-0' : 'pl-4 pr-0') }} font-weight-medium text-muted text-uppercase flex-grow-1">{{ __('Menu') }}</div>
+            <div class="d-flex align-items-center">
+                <div class="py-3 {{ (__('lang_dir') == 'rtl' ? 'pr-4 pl-0' : 'pl-4 pr-0') }} font-weight-medium text-muted text-uppercase flex-grow-1">{{ __('Menu') }}</div>
 
-                    @if(Auth::user()->role == 1)
-                        @if (request()->segment(1) == 'admin')
-                            <a class="px-4 py-2 text-decoration-none text-secondary" href="{{ route('dashboard') }}" data-enable="tooltip" title="{{ __('User') }}" role="button"><span class="d-flex align-items-center">@include('icons.user', ['class' => 'width-4 height-4 fill-current'])</span></a>
-                        @else
-                            <a class="px-4 py-2 text-decoration-none text-secondary" href="{{ route('admin.dashboard') }}" data-enable="tooltip" title="{{ __('Admin') }}" role="button"><span class="d-flex align-items-center">@include('icons.admin', ['class' => 'width-4 height-4 fill-current'])</span></a>
-                        @endif
+                @if(Auth::user()->role == 1)
+                    @if (request()->segment(1) == 'admin')
+                        <a class="px-4 py-2 text-decoration-none text-secondary" href="{{ route('dashboard') }}" data-enable="tooltip" title="{{ __('User') }}" role="button"><span class="d-flex align-items-center">@include('icons.user', ['class' => 'width-4 height-4 fill-current'])</span></a>
+                    @else
+                        <a class="px-4 py-2 text-decoration-none text-secondary" href="{{ route('admin.dashboard') }}" data-enable="tooltip" title="{{ __('Admin') }}" role="button"><span class="d-flex align-items-center">@include('icons.admin', ['class' => 'width-4 height-4 fill-current'])</span></a>
                     @endif
-                </div>
+                @endif
+            </div>
 
+            <div class="sidebar-section flex-grow-1 overflow-auto sidebar">
                 @yield('menu')
             </div>
 

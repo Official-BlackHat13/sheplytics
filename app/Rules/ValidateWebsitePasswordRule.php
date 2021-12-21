@@ -8,21 +8,19 @@ use Illuminate\Contracts\Validation\Rule;
 class ValidateWebsitePasswordRule implements Rule
 {
     /**
-     * The link id.
-     *
      * @var
      */
-    private $link;
+    private $website;
 
     /**
      * Create a new rule instance.
      *
-     * @param $link
+     * @param $website
      * @return void
      */
-    public function __construct($link)
+    public function __construct($website)
     {
-        $this->link = $link;
+        $this->website = $website;
     }
 
     /**
@@ -34,9 +32,7 @@ class ValidateWebsitePasswordRule implements Rule
      */
     public function passes($attribute, $value)
     {
-        $website = Website::where('url', '=', $this->link)->first();
-
-        if ($website->password == $value) {
+        if ($this->website->password == $value) {
             return true;
         }
 

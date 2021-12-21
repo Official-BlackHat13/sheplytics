@@ -19,6 +19,13 @@
                     @endif
                 </div>
             </div>
+            <div class="col-auto">
+                <div class="form-row">
+                    <div class="col">
+                        @include('admin.tax-rates.partials.menu')
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <div class="card-body">
@@ -85,67 +92,7 @@
                 </div>
             </div>
 
-            <div class="row mt-3">
-                <div class="col">
-                    <button type="submit" name="submit" class="btn btn-primary">{{ __('Save') }}</button>
-                </div>
-                <div class="col-auto">
-                    @if($taxRate->trashed())
-                        <button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#restore-modal">{{ __('Restore') }}</button>
-                    @else
-                        <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#disable-modal">{{ __('Disable') }}</button>
-                    @endif
-                </div>
-            </div>
+            <button type="submit" name="submit" class="btn btn-primary">{{ __('Save') }}</button>
         </form>
-    </div>
-</div>
-
-<div class="modal fade" id="disable-modal" tabindex="-1" role="dialog" aria-labelledby="disable-modal-label" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content border-0 shadow">
-            <div class="modal-header">
-                <h6 class="modal-title" id="disable-modal-label">{{ __('Disable') }}</h6>
-                <button type="button" class="close d-flex align-items-center justify-content-center width-12 height-14" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true" class="d-flex align-items-center">@include('icons.close', ['class' => 'fill-current width-3 height-3'])</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                {{ __('Are you sure you want to disable :name?', ['name' => $taxRate->name]) }}
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('Close') }}</button>
-                <form action="{{ route('admin.tax_rates.disable', $taxRate->id) }}" method="post" enctype="multipart/form-data">
-
-                    @csrf
-
-                    <button type="submit" class="btn btn-danger">{{ __('Disable') }}</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="modal fade" id="restore-modal" tabindex="-1" role="dialog" aria-labelledby="restore-modal-label" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content border-0 shadow">
-            <div class="modal-header">
-                <h6 class="modal-title" id="restore-modal-label">{{ __('Restore') }}</h6>
-                <button type="button" class="close d-flex align-items-center justify-content-center width-12 height-14" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true" class="d-flex align-items-center">@include('icons.close', ['class' => 'fill-current width-3 height-3'])</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div>{{ __('Are you sure you want to restore :name?', ['name' => $taxRate->name]) }}</div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('Close') }}</button>
-                <form action="{{ route('admin.tax_rates.restore', $taxRate->id) }}" method="post" enctype="multipart/form-data">
-
-                    @csrf
-
-                    <button type="submit" class="btn btn-success">{{ __('Restore') }}</button>
-                </form>
-            </div>
-        </div>
     </div>
 </div>

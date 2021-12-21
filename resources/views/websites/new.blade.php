@@ -1,7 +1,7 @@
 @section('site_title', formatTitle([__('New'), __('Website'), config('settings.title')]))
 
 @include('shared.breadcrumbs', ['breadcrumbs' => [
-    ['url' => isset($admin) ? route('admin.dashboard') : route('dashboard'), 'title' => isset($admin) ? __('Admin') : __('Home')],
+    ['url' => route('dashboard'), 'title' => __('Home')],
     ['title' => __('New')],
 ]])
 
@@ -19,7 +19,7 @@
     <div class="card-body">
         @include('shared.message')
 
-        <form action="{{ isset($admin) ? route('admin.websites.new') : route('websites.new') }}" method="post" enctype="multipart/form-data">
+        <form action="{{ route('websites.new') }}" method="post" enctype="multipart/form-data">
             @csrf
 
             <div class="form-group">
@@ -109,7 +109,7 @@
             <div class="form-row">
                 <div class="col-12 col-md-6">
                     <div class="form-group">
-                        <label for="i-exclude-ips">{{ __('Exclude IPs') }}</label>
+                        <label for="i-exclude-ips" class="d-flex align-items-center">{{ __('Exclude IPs') }} <span data-enable="tooltip" title="{{ __('To block entire IP classes, use the CIDR notation.') }}" class="d-flex align-items-center {{ (__('lang_dir') == 'rtl' ? 'mr-2' : 'ml-2') }}">@include('icons.info', ['class' => 'fill-current text-muted width-4 height-4'])</span></label>
                         <textarea name="exclude_ips" id="i-exclude-ips" class="form-control{{ $errors->has('exclude_ips') ? ' is-invalid' : '' }}" placeholder="{{ __('One per line.') }}">{{ old('exclude_ips') }}</textarea>
                         @if ($errors->has('exclude_ips'))
                             <span class="invalid-feedback" role="alert">

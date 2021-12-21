@@ -20,7 +20,7 @@
             <label for="i-cronjob-cache">{!! __(':name command', ['name' => '<span class="badge badge-primary">cache</span>']) !!}</label>
             <div class="input-group">
                 <div class="input-group-prepend">
-                    <code class="input-group-text" id="basic-addon1">0 6 * * 0</code>
+                    <code class="input-group-text">0 6 * * 0</code>
                 </div>
                 <input type="text" dir="ltr" name="cronjob_cache" id="i-cronjob-cache" class="form-control" value="wget {{ route('cronjobs.cache', ['key' => config('settings.cronjob_key')]) }} >/dev/null 2>&1" readonly>
                 <div class="input-group-append">
@@ -33,7 +33,7 @@
             <label for="i-cronjob-check">{!! __(':name command', ['name' => '<span class="badge badge-warning">check</span>']) !!}</label>
             <div class="input-group">
                 <div class="input-group-prepend">
-                    <code class="input-group-text" id="basic-addon1">1 0 * * *</code>
+                    <code class="input-group-text">1 0 * * *</code>
                 </div>
                 <input type="text" dir="ltr" name="cronjob_check" id="i-cronjob-check" class="form-control" value="wget {{ route('cronjobs.check', ['key' => config('settings.cronjob_key')]) }} >/dev/null 2>&1" readonly>
                 <div class="input-group-append">
@@ -46,7 +46,7 @@
             <label for="i-cronjob-clean">{!! __(':name command', ['name' => '<span class="badge badge-danger">clean</span>']) !!}</label>
             <div class="input-group">
                 <div class="input-group-prepend">
-                    <code class="input-group-text" id="basic-addon1">0 0 * * *</code>
+                    <code class="input-group-text">0 0 * * *</code>
                 </div>
                 <input type="text" dir="ltr" name="cronjob_clean" id="i-cronjob-clean" class="form-control" value="wget {{ route('cronjobs.clean', ['key' => config('settings.cronjob_key')]) }} >/dev/null 2>&1" readonly>
                 <div class="input-group-append">
@@ -59,7 +59,7 @@
             <label for="i-cronjob-email">{!! __(':name command', ['name' => '<span class="badge badge-success">email</span>']) !!}</label>
             <div class="input-group">
                 <div class="input-group-prepend">
-                    <code class="input-group-text" id="basic-addon1">1 0 1 * *</code>
+                    <code class="input-group-text">1 0 1 * *</code>
                 </div>
                 <input type="text" dir="ltr" name="cronjob_email" id="i-cronjob-email" class="form-control" value="wget {{ route('cronjobs.email', ['key' => config('settings.cronjob_key')]) }} >/dev/null 2>&1" readonly>
                 <div class="input-group-append">
@@ -68,7 +68,7 @@
             </div>
         </div>
 
-        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#regenerate-modal">{{ __('Regenerate') }}</button>
+        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modal" data-action="{{ route('admin.cronjobs') }}" data-button="btn btn-danger" data-title="{{ __('Regenerate') }}" data-text="{{ __('If you regenerate the cron job key, you will need to update the cron job tasks with the new commands.') }}">{{ __('Regenerate') }}</button>
     </div>
 </div>
 
@@ -169,31 +169,6 @@
                 </div>
             </div>
         @endif
-    </div>
-</div>
-
-<div class="modal fade" id="regenerate-modal" tabindex="-1" role="dialog" aria-labelledby="regenerate-modal-label" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content border-0 shadow">
-            <div class="modal-header">
-                <h6 class="modal-title" id="regenerate-modal-label">{{ __('Regenerate') }}</h6>
-                <button type="button" class="close d-flex align-items-center justify-content-center width-12 height-14" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true" class="d-flex align-items-center">@include('icons.close', ['class' => 'fill-current width-3 height-3'])</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div>{{ __('If you regenerate the cron job key, you will need to update the cron job tasks with the new commands.') }}</div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('Close') }}</button>
-                <form action="{{ route('admin.cronjobs') }}" method="post" enctype="multipart/form-data">
-
-                    @csrf
-
-                    <button type="submit" class="btn btn-danger">{{ __('Regenerate') }}</button>
-                </form>
-            </div>
-        </div>
     </div>
 </div>
 

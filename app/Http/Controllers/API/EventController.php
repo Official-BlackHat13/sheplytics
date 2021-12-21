@@ -7,6 +7,9 @@ use GeoIp2\Database\Reader as GeoIP;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use IPTools\IP;
+use IPTools\Range;
+use Symfony\Component\HttpFoundation\IpUtils;
 use WhichBrowser\Parser as UserAgent;
 
 class EventController extends Controller
@@ -39,10 +42,9 @@ class EventController extends Controller
 
         // If the website has any excluded IPs
         if ($website->exclude_ips) {
-            $excludedIPs = preg_split('/\n|\r/', $website->exclude_ips, -1, PREG_SPLIT_NO_EMPTY);
+            $excludedIps = preg_split('/\n|\r/', $website->exclude_ips, -1, PREG_SPLIT_NO_EMPTY);
 
-            // If the user's IP is excluded
-            if (in_array($request->ip(), $excludedIPs)) {
+            if (IpUtils::checkIp($request->ip(), $excludedIps)) {
                 return 403;
             }
         }

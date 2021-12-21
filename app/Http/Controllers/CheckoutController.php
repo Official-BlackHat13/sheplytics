@@ -139,7 +139,7 @@ class CheckoutController
         $exclTaxRatesPercentage = $taxRates->where('type', '=', 1)->sum('percentage');
 
         // Get the total amount to be charged
-        $amount = str_replace(',', '.', formatMoney(checkoutTotal(($request->input('interval') == 'year' ? $plan->amount_year : $plan->amount_month), $coupon->percentage ?? null, $exclTaxRatesPercentage, $inclTaxRatesPercentage), $plan->currency));
+        $amount = formatMoney(checkoutTotal(($request->input('interval') == 'year' ? $plan->amount_year : $plan->amount_month), $coupon->percentage ?? null, $exclTaxRatesPercentage, $inclTaxRatesPercentage), $plan->currency, false, false);
 
         $taxRates = TaxRate::whereIn('id', $plan->tax_rates ?? [])->ofRegion($request->user()->billing_information->country ?? null)->orderBy('type')->get();
 

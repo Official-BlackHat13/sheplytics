@@ -5,3 +5,4 @@ function checkGlobal() {
   const currWindowKeys = Object.keys(window);
   return currWindowKeys.filter(value => !defWindow.includes(value));
 }
+  

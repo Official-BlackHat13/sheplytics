@@ -25,6 +25,6 @@ class Language extends Model
      */
     public function scopeSearchName(Builder $query, $value)
     {
-        return $query->where('name', 'like', '%'.$value.'%');
+        return $query->where('name', 'like', '%' . $value . '%');
     }
 }

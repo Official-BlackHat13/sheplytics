@@ -1,7 +1,7 @@
 @section('site_title', formatTitle([__('Edit'), __('Website'), config('settings.title')]))
 
 @include('shared.breadcrumbs', ['breadcrumbs' => [
-    ['url' => isset($admin) ? route('admin.dashboard') : route('dashboard'), 'title' => isset($admin) ? __('Admin') : __('Home')],
+    ['url' => request()->is('admin/*') ? route('admin.dashboard') : route('dashboard'), 'title' => request()->is('admin/*') ? __('Admin') : __('Home')],
     ['title' => __('Edit')],
 ]])
 
@@ -16,15 +16,9 @@
                 <div class="font-weight-medium py-1">{{ __('Website') }}</div>
             </div>
             <div class="col-auto">
-                <div class="form-row flex-nowrap">
+                <div class="form-row">
                     <div class="col">
-                        <a href="{{ route('stats.overview', ['id' => $website->url, 'from' => $range['from'] ?? null, 'to' => $range['to'] ?? null]) }}" class="btn btn-sm text-primary" data-enable="tooltip" title="{{ __('Stats') }}">@include('icons.stats', ['class' => 'fill-current width-4 height-4'])&#8203;</a>
-                    </div>
-
-                    <div class="col">
-                        <a href="#" class="btn btn-sm text-primary d-flex align-items-center" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@include('icons.horizontal-menu', ['class' => 'fill-current width-4 height-4'])&#8203;</a>
-
-                        @include('shared.dropdowns.website', ['class' => 'text-secondary', 'options' => ['stats' => true, 'open' => true, 'delete' => true]])
+                        @include('websites.partials.menu')
                     </div>
                 </div>
             </div>
@@ -33,10 +27,10 @@
     <div class="card-body">
         @include('shared.message')
 
-        <form action="{{ isset($admin) ? route('admin.websites.edit', $website->id) : route('websites.edit', $website->id) }}" method="post" enctype="multipart/form-data">
+        <form action="{{ request()->is('admin/*') ? route('admin.websites.edit', $website->id) : route('websites.edit', $website->id) }}" method="post" enctype="multipart/form-data">
             @csrf
 
-            @if(isset($admin))
+            @if(request()->is('admin/*'))
                 <input type="hidden" name="user_id" value="{{ $website->user->id }}">
             @endif
 
@@ -92,7 +86,7 @@
                                         <div class="input-group-prepend">
                                             <div class="input-group-text cursor-pointer" data-enable="tooltip" data-title="{{ __('Show password') }}" data-password="i-password" data-password-show="{{ __('Show password') }}" data-password-hide="{{ __('Hide password') }}">@include('icons.security', ['class' => 'width-4 height-4 fill-current text-muted'])</div>
                                         </div>
-                                        <input id="i-password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" value="{{ isset($admin) ? '' : (old('password') ?? $website->password) }}" autocomplete="new-password" @if(isset($admin)) disabled @endif>
+                                        <input id="i-password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" value="{{ request()->is('admin/*') ? '' : (old('password') ?? $website->password) }}" autocomplete="new-password" @if(request()->is('admin/*')) disabled @endif>
                                     </div>
                                     @if ($errors->has('password'))
                                     <span class="invalid-feedback d-block" role="alert">
@@ -135,7 +129,7 @@
             <div class="form-row">
                 <div class="col-12 col-md-6">
                     <div class="form-group">
-                        <label for="i-exclude-ips">{{ __('Exclude IPs') }}</label>
+                        <label for="i-exclude-ips" class="d-flex align-items-center">{{ __('Exclude IPs') }} <span data-enable="tooltip" title="{{ __('To block entire IP classes, use the CIDR notation.') }}" class="d-flex align-items-center {{ (__('lang_dir') == 'rtl' ? 'mr-2' : 'ml-2') }}">@include('icons.info', ['class' => 'fill-current text-muted width-4 height-4'])</span></label>
                         <textarea name="exclude_ips" id="i-exclude-ips" class="form-control{{ $errors->has('exclude_ips') ? ' is-invalid' : '' }}" placeholder="{{ __('One per line.') }}">{{ old('exclude_ips') ?? $website->exclude_ips }}</textarea>
                         @if ($errors->has('exclude_ips'))
                             <span class="invalid-feedback" role="alert">
@@ -180,39 +174,11 @@
                 @include('shared.tracking-code')
             </div>
 
-            <div class="row mt-3">
-                <div class="col">
-                    <button type="submit" name="submit" class="btn btn-primary">{{ __('Save') }}</button>
-                </div>
-                <div class="col-auto">
-                    <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#delete-website-modal" data-action="{{ isset($admin) ? route('admin.websites.destroy', $website->id) : route('websites.destroy', $website->id) }}" data-text="{{ __('Are you sure you want to delete :name?', ['name' => $website->url]) }}">{{ __('Delete') }}</button>
-                </div>
-            </div>
+            <button type="submit" name="submit" class="btn btn-primary">{{ __('Save') }}</button>
         </form>
     </div>
 </div>
 
-@if(isset($admin))
-    @if(isset($website->user))
-        <div class="card border-0 shadow-sm mt-3">
-            <div class="card-header">
-                <div class="row"><div class="col"><div class="font-weight-medium py-1">{{ __('User') }}</div></div><div class="col-auto"><a href="{{ route('admin.users.edit', $website->user->id) }}" class="btn btn-outline-primary btn-sm">{{ __('Edit') }}</a></div></div>
-            </div>
-            <div class="card-body mb-n3">
-                <div class="row">
-                    <div class="col-12 col-lg-6 mb-3">
-                        <div class="text-muted">{{ __('Name') }}</div>
-                        <div>{{ $website->user->name }}</div>
-                    </div>
-
-                    <div class="col-12 col-lg-6 mb-3">
-                        <div class="text-muted">{{ __('Email') }}</div>
-                        <div>{{ $website->user->email }}</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    @endif
+@if(request()->is('admin/*'))
+    @include('admin.users.partials.card', ['user' => $website->user])
 @endif
-
-@include('shared.modals.delete-website', ['admin' => isset($admin) ? true : false])

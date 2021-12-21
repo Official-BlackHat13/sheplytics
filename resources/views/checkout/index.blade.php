@@ -533,5 +533,6 @@
             new ClipboardJS('.btn');
         });
     </script>
-    @include('shared.sidebars.user')
 @endsection
+
+@include('shared.sidebars.user')

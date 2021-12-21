@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 trait WebsiteTrait
 {
     /**
-     * Store the website.
+     * Store the Website.
      *
      * @param Request $request
      * @return Website
@@ -35,7 +35,7 @@ trait WebsiteTrait
     }
 
     /**
-     * Update the website.
+     * Update the Website.
      *
      * @param Request $request
      * @param Website $website

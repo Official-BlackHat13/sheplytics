@@ -185,7 +185,34 @@ document.querySelector('#search-filters') && document.querySelector('#search-fil
     e.stopPropagation();
 });
 
-// Website
+// Toggle password visibility
+document.querySelectorAll('[data-password]').forEach(function (element) {
+    element.addEventListener('click', function (e) {
+        let passwordInput = document.querySelector('#' + this.dataset.password);
+
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            jQuery(this).tooltip('hide').attr('data-original-title', this.dataset.passwordHide).tooltip('show');
+        } else {
+            passwordInput.type = 'password';
+            jQuery(this).tooltip('hide').attr('data-original-title', this.dataset.passwordShow).tooltip('show');
+        }
+    });
+});
+
+// Confirmation modal
+document.querySelectorAll('[data-target="#modal"]').forEach(function (element) {
+    element.addEventListener('click', function () {
+        document.querySelector('#modal-label').textContent = this.dataset.title
+        document.querySelector('#modal-button').textContent = this.dataset.title;
+        document.querySelector('#modal-button').setAttribute('class', this.dataset.button);
+        document.querySelector('#modal-text').textContent = this.dataset.text;
+        document.querySelector('#modal-sub-text').textContent = this.dataset.subText;
+        document.querySelector('#modal form').setAttribute('action', this.dataset.action);
+    });
+});
+
+// Privacy selector
 document.querySelectorAll('input[name="privacy"]').forEach(function (element) {
     element.addEventListener('click', function () {
         if (this.checked && this.value == 2) {
@@ -195,13 +222,6 @@ document.querySelectorAll('input[name="privacy"]').forEach(function (element) {
             document.querySelector('#input-password').classList.add('d-none');
             document.querySelector('#input-password').classList.remove('d-block')
         }
-    });
-});
-
-document.querySelectorAll('[data-target="#delete-website-modal"]').forEach(function (element) {
-    element.addEventListener('click', function () {
-        document.querySelector('#deleteWebsiteMessage').textContent = this.dataset.text;
-        document.querySelector('#delete-website-modal form').setAttribute('action', this.dataset.action);
     });
 });
 
@@ -261,23 +281,6 @@ document.querySelectorAll('[data-enable="tooltip-copy"]').forEach(function (elem
 document.querySelectorAll('.slide-menu-toggle').forEach(function(element) {
     element.addEventListener('click', function() {
         document.querySelector('#slide-menu').classList.toggle('active');
-    });
-});
-
-// Toggle password visibility
-window.addEventListener('DOMContentLoaded', function () {
-    document.querySelectorAll('[data-password]').forEach(function (element) {
-        element.addEventListener('click', function (e) {
-            let passwordInput = document.querySelector('#' + this.dataset.password);
-
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                jQuery(this).tooltip('hide').attr('data-original-title', this.dataset.passwordHide).tooltip('show');
-            } else {
-                passwordInput.type = 'password';
-                jQuery(this).tooltip('hide').attr('data-original-title', this.dataset.passwordShow).tooltip('show');
-            }
-        });
     });
 });
 

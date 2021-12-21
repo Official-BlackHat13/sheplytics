@@ -14,11 +14,11 @@ class UserObserver
      */
     public function deleting(User $user)
     {
-        $user->stats()->delete();
-        $user->recents()->delete();
-        $user->websites()->delete();
-
         if ($user->isForceDeleting()) {
+            $user->stats()->delete();
+            $user->recents()->delete();
+            $user->websites()->delete();
+
             // If the user previously had a subscription, attempt to cancel it
             if ($user->plan_subscription_id) {
                 $user->planSubscriptionCancel();

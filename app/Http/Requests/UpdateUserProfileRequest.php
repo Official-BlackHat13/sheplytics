@@ -36,7 +36,7 @@ class UpdateUserProfileRequest extends FormRequest
             'password'  => ['nullable', 'string', 'min:6', 'confirmed'],
             'timezone' => ['required'],
             'plan_id' => ['sometimes'],
-            'plan_ends_at' => ['sometimes', 'nullable', 'required_unless:plan_id,1', 'date_format:Y-m-d']
+            'plan_ends_at' => ['sometimes', 'nullable', 'date_format:Y-m-d']
         ];
     }
 }

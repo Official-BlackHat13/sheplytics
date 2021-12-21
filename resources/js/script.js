@@ -42,7 +42,7 @@
         // Send the request
         var request = new XMLHttpRequest();
         request.open("POST", trackingCode.getAttribute('data-host') + "/api/event", true),
-        request.setRequestHeader("Content-Type", "application/json, text/javascript; charset=utf-8"),
+        request.setRequestHeader("Content-Type", "application/json; charset=utf-8"),
         request.send(JSON.stringify(params));
     }
 

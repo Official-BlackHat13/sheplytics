@@ -99,7 +99,11 @@
                                                         </div>
                                                     </div>
                                                     <div class="col-auto">
-                                                        <a href="{{ route('admin.users.edit', $user->id) }}" class="btn btn-outline-primary btn-sm">{{ __('Edit') }}</a>
+                                                        <div class="form-row">
+                                                            <div class="col">
+                                                                @include('admin.users.partials.menu', ['user' => $user])
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -160,7 +164,11 @@
                                                             </div>
                                                         </div>
                                                         <div class="col-auto">
-                                                            <a href="{{ route('admin.payments.edit', $payment->id) }}" class="btn btn-outline-primary btn-sm">{{ __('Edit') }}</a>
+                                                            <div class="form-row">
+                                                                <div class="col">
+                                                                    @include('account.payments.partials.menu')
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -169,7 +177,7 @@
                                     @endif
                                 </div>
 
-                                @if(count($users) > 0)
+                                @if(count($payments) > 0)
                                     <div class="card-footer bg-base-2 border-0">
                                         <a href="{{ route('admin.payments') }}" class="text-muted font-weight-medium d-flex align-items-center justify-content-center">{{ __('View all') }} @include((__('lang_dir') == 'rtl' ? 'icons.chevron-left' : 'icons.chevron-right'), ['class' => 'width-3 height-3 fill-current '.(__('lang_dir') == 'rtl' ? 'mr-2' : 'ml-2')])</a>
                                     </div>
@@ -210,7 +218,11 @@
                                                             </div>
                                                         </div>
                                                         <div class="col-auto">
-                                                            <a href="{{ route('admin.websites.edit', $website->id) }}" class="btn btn-outline-primary btn-sm">{{ __('Edit') }}</a>
+                                                            <div class="form-row">
+                                                                <div class="col">
+                                                                    @include('websites.partials.menu')
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -283,6 +295,5 @@
             </div>
         </div>
     </div>
-
-    @include('admin.sidebar')
 @endsection
+@include('admin.sidebar')

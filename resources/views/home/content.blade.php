@@ -410,7 +410,7 @@
                         </div>
                     </div>
 
-                    <div><a href="{{ route('register') }}" class="btn btn-primary py-2">{{ __('Get started') }}</a></div>
+                    <div><a href="{{ config('settings.registration') ? route('register') : route('login') }}" class="btn btn-primary py-2">{{ __('Get started') }}</a></div>
                 </div>
             </div>
         @endif

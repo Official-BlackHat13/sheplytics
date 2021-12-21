@@ -1,31 +1,44 @@
-@if(isset($admin))
+@if(request()->is('admin/*'))
     @section('site_title', formatTitle([__('Edit'), __('User'), config('settings.title')]))
 @else
     @section('site_title', formatTitle([__('Profile'), config('settings.title')]))
 @endif
 
 @include('shared.breadcrumbs', ['breadcrumbs' => [
-    ['url' => isset($admin) ? route('admin.dashboard') : route('dashboard'), 'title' => isset($admin) ? __('Admin') : __('Home')],
-    ['url' => isset($admin) ? route('admin.users') : route('account'), 'title' => isset($admin) ? __('Users') : __('Account')],
-    ['title' => isset($admin) ? __('Edit') : __('Profile')]
+    ['url' => request()->is('admin/*') ? route('admin.dashboard') : route('dashboard'), 'title' => request()->is('admin/*') ? __('Admin') : __('Home')],
+    ['url' => request()->is('admin/*') ? route('admin.users') : route('account'), 'title' => request()->is('admin/*') ? __('Users') : __('Account')],
+    ['title' => request()->is('admin/*') ? __('Edit') : __('Profile')]
 ]])
 
 <div class="d-flex">
-    <h2 class="mb-3 text-break">{{ (isset($admin) ? __('Edit') : __('Profile')) }}</h2>
+    <h2 class="mb-3 text-break">{{ (request()->is('admin/*') ? __('Edit') : __('Profile')) }}</h2>
 </div>
 
 <div class="card border-0 shadow-sm">
-    <div class="card-header">
-        <div class="font-weight-medium py-1">
-            @if(isset($admin))
-                {{ __('User') }}
-                @if($user->trashed())
-                    <span class="badge badge-danger">{{ __('Disabled') }}</span>
-                @elseif(!$user->email_verified_at)
-                    <span class="badge badge-secondary">{{ __('Pending') }}</span>
-                @endif
-            @else
-                {{ __('Profile') }}
+    <div class="card-header align-items-center">
+        <div class="row">
+            <div class="col">
+                <div class="font-weight-medium py-1">
+                    @if(request()->is('admin/*'))
+                        {{ __('User') }}
+                        @if($user->trashed())
+                            <span class="badge badge-danger">{{ __('Disabled') }}</span>
+                        @elseif(!$user->email_verified_at)
+                            <span class="badge badge-secondary">{{ __('Pending') }}</span>
+                        @endif
+                    @else
+                        {{ __('Profile') }}
+                    @endif
+                </div>
+            </div>
+            @if(request()->is('admin/*'))
+                <div class="col-auto">
+                    <div class="form-row">
+                        <div class="col">
+                            @include('admin.users.partials.menu')
+                        </div>
+                    </div>
+                </div>
             @endif
         </div>
     </div>
@@ -33,7 +46,7 @@
     <div class="card-body">
         @include('shared.message')
 
-        @if($user->getPendingEmail() && isset($admin) == false)
+        @if($user->getPendingEmail() && request()->is('admin/*') == false)
             <div class="alert alert-info d-flex" role="alert">
                 <div>
                     <form class="d-inline" method="POST" action="{{ route('account.profile.resend') }}" id="resend-form">
@@ -50,7 +63,7 @@
             </div>
         @endif
 
-        <form action="{{ (isset($admin) ? route('admin.users.edit', $user->id) : route('account.profile.update')) }}" method="post" enctype="multipart/form-data">
+        <form action="{{ (request()->is('admin/*') ? route('admin.users.edit', $user->id) : route('account.profile.update')) }}" method="post" enctype="multipart/form-data">
             @csrf
 
             <div class="form-group">
@@ -104,7 +117,7 @@
                 </div>
             </div>
 
-            @if(isset($admin))
+            @if(request()->is('admin/*'))
                 <div class="hr-text"><span class="font-weight-medium text-body">{{ __('Status') }}</span></div>
 
                 <div class="form-group">
@@ -159,7 +172,7 @@
                 <div class="hr-text"><span class="font-weight-medium text-body">{{ __('Plan') }}</span></div>
 
                 <div class="form-row">
-                    <div class="col-12 col-lg-6">
+                    <div class="col-12 col-lg-4">
                         <div class="form-group">
                             <label for="i-plan-id">{{ __('Name') }}</label>
                             <select id="i-plan-id" name="plan_id" class="custom-select{{ $errors->has('plan_id') ? ' is-invalid' : '' }}">
@@ -174,7 +187,7 @@
                             @endif
                         </div>
                     </div>
-                    <div class="col-12 col-lg-6">
+                    <div class="col-12 col-lg-4">
                         <div class="form-group">
                             <label for="i-plan-ends-at">{{ __('Ends at') }}</label>
                             <input type="date" name="plan_ends_at" class="form-control{{ $errors->has('plan_ends_at') ? ' is-invalid' : '' }}" id="i-plan-ends-at" placeholder="YYYY-MM-DD" value="{{ old('plan_ends_at') ?? ($user->plan_ends_at ? $user->plan_ends_at->tz($user->timezone ?? config('app.timezone'))->format('Y-m-d') : '') }}">
@@ -185,35 +198,21 @@
                             @endif
                         </div>
                     </div>
+                    <div class="col-12 col-lg-4">
+                        <div class="form-group">
+                            <label for="i-plan-payment-processor">{{ __('Processor') }}</label>
+                            <input type="text" class="form-control" id="i-plan-payment-processor" value="{{ config('payment.processors.' . $user->plan_payment_processor)['name'] ?? __('None') }}" readonly>
+                        </div>
+                    </div>
                 </div>
             @endif
 
-            <div class="row mt-3">
-                <div class="col">
-                    <button type="submit" name="submit" class="btn btn-primary">{{ __('Save') }}</button>
-                </div>
-                <div class="col-auto">
-                    @if(isset($admin))
-                        <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            {{ __('More') }}
-                        </button>
-                        <div class="dropdown-menu {{ (__('lang_dir') == 'rtl' ? 'dropdown-menu' : 'dropdown-menu-right') }} border-0 shadow">
-                            @if($user->trashed())
-                                <a class="dropdown-item text-success d-flex align-items-center" href="#" data-toggle="modal" data-target="#restore-modal">@include('icons.restore', ['class' => 'fill-current width-4 height-4 '.(__('lang_dir') == 'rtl' ? 'ml-3' : 'mr-3')]) {{ __('Restore') }}</a>
-                                <div class="dropdown-divider"></div>
-                            @else
-                                <a class="dropdown-item text-danger d-flex align-items-center" href="#" data-toggle="modal" data-target="#disable-modal">@include('icons.block', ['class' => 'fill-current width-4 height-4 '.(__('lang_dir') == 'rtl' ? 'ml-3' : 'mr-3')]) {{ __('Disable') }}</a>
-                            @endif
-                            <a class="dropdown-item text-danger d-flex align-items-center" href="#" data-toggle="modal" data-target="#delete-modal">@include('icons.delete', ['class' => 'fill-current width-4 height-4 '.(__('lang_dir') == 'rtl' ? 'ml-3' : 'mr-3')]) {{ __('Delete') }}</a>
-                        </div>
-                    @endif
-                </div>
-            </div>
+            <button type="submit" name="submit" class="btn btn-primary">{{ __('Save') }}</button>
         </form>
     </div>
 </div>
 
-@if(isset($admin))
+@if(request()->is('admin/*'))
     <div class="row">
         @php
             $menu = [
@@ -236,80 +235,5 @@
                 </a>
             </div>
         @endforeach
-    </div>
-    <div class="modal fade" id="delete-modal" tabindex="-1" role="dialog" aria-labelledby="delete-modal-label" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content border-0 shadow">
-                <div class="modal-header">
-                    <h6 class="modal-title" id="delete-modal-label">{{ __('Delete') }}</h6>
-                    <button type="button" class="close d-flex align-items-center justify-content-center width-12 height-14" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true" class="d-flex align-items-center">@include('icons.close', ['class' => 'fill-current width-3 height-3'])</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    {{ __('Are you sure you want to delete :name?', ['name' => $user->name]) }}
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('Close') }}</button>
-                    <form action="{{ route('admin.users.destroy', $user->id) }}" method="post" enctype="multipart/form-data">
-
-                        @csrf
-
-                        <button type="submit" class="btn btn-danger">{{ __('Delete') }}</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="modal fade" id="disable-modal" tabindex="-1" role="dialog" aria-labelledby="disable-modal-label" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content border-0 shadow">
-                <div class="modal-header">
-                    <h6 class="modal-title" id="disable-modal-label">{{ __('Disable') }}</h6>
-                    <button type="button" class="close d-flex align-items-center justify-content-center width-12 height-14" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true" class="d-flex align-items-center">@include('icons.close', ['class' => 'fill-current width-3 height-3'])</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    @if(paymentProcessors())
-                        <div class="mb-3">{{ __('Disabling this account will cancel any active subscription.') }}</div>
-                    @endif
-                    <div>{{ __('Are you sure you want to disable :name?', ['name' => $user->name]) }}</div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('Close') }}</button>
-                    <form action="{{ route('admin.users.disable', $user->id) }}" method="post" enctype="multipart/form-data">
-
-                        @csrf
-
-                        <button type="submit" class="btn btn-danger">{{ __('Disable') }}</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="modal fade" id="restore-modal" tabindex="-1" role="dialog" aria-labelledby="restore-modal-label" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content border-0 shadow">
-                <div class="modal-header">
-                    <h6 class="modal-title" id="restore-modal-label">{{ __('Restore') }}</h6>
-                    <button type="button" class="close d-flex align-items-center justify-content-center width-12 height-14" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true" class="d-flex align-items-center">@include('icons.close', ['class' => 'fill-current width-3 height-3'])</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div>{{ __('Are you sure you want to restore :name?', ['name' => $user->name]) }}</div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('Close') }}</button>
-                    <form action="{{ route('admin.users.restore', $user->id) }}" method="post" enctype="multipart/form-data">
-
-                        @csrf
-
-                        <button type="submit" class="btn btn-success">{{ __('Restore') }}</button>
-                    </form>
-                </div>
-            </div>
-        </div>
     </div>
 @endif

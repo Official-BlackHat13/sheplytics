@@ -82,7 +82,7 @@ Route::prefix('account')->middleware('verified')->group(function () {
 
     Route::get('/payments', 'AccountController@indexPayments')->middleware('payment')->name('account.payments');
     Route::get('/payments/{id}/edit', 'AccountController@editPayment')->middleware('payment')->name('account.payments.edit');
-    Route::post('/payments/{id}/edit', 'AdminController@updatePayment');
+    Route::post('/payments/{id}/cancel', 'AccountController@cancelPayment')->name('account.payments.cancel');
 
     Route::get('/invoices/{id}', 'AccountController@showInvoice')->middleware('payment')->name('account.invoices.show');
 
@@ -173,7 +173,8 @@ Route::prefix('admin')->middleware('admin', 'license')->group(function () {
 
     Route::get('/payments', 'AdminController@indexPayments')->name('admin.payments');
     Route::get('/payments/{id}/edit', 'AdminController@editPayment')->name('admin.payments.edit');
-    Route::post('/payments/{id}/edit', 'AdminController@updatePayment');
+    Route::post('/payments/{id}/approve', 'AdminController@approvePayment')->name('admin.payments.approve');
+    Route::post('/payments/{id}/cancel', 'AdminController@cancelPayment')->name('admin.payments.cancel');
 
     Route::get('/invoices/{id}', 'AdminController@showInvoice')->name('admin.invoices.show');
 
@@ -194,7 +195,7 @@ Route::prefix('admin')->middleware('admin', 'license')->group(function () {
     Route::get('/websites', 'AdminController@indexWebsites')->name('admin.websites');
     Route::get('/websites/{id}/edit', 'AdminController@editWebsite')->name('admin.websites.edit');
     Route::post('/websites/{id}/edit', 'AdminController@updateWebsite');
-    Route::post('/websites/{id}/delete', 'AdminController@destroyWebsite')->name('admin.websites.destroy');
+    Route::post('/websites/{id}/destroy', 'AdminController@destroyWebsite')->name('admin.websites.destroy');
 });
 
 // Pricing routes
@@ -278,7 +279,7 @@ Route::prefix('/{id}')->group(function () {
         Route::get('/screen-resolutions', 'StatController@exportScreenResolutions')->name('stats.export.screen_resolutions');
         Route::get('/devices', 'StatController@exportDevices')->name('stats.export.devices');
 
-        Route::get('/events', [''], 'StatController@exportEvents')->name('stats.export.events');
+        Route::get('/events', 'StatController@exportEvents')->name('stats.export.events');
     });
 
     Route::post('/password', 'StatController@validatePassword')->name('stats.password');

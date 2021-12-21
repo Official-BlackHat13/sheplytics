@@ -215,7 +215,7 @@ body {
   &::-webkit-slider-thumb {
     width: 1.75rem;
     height: 1.75rem;
-    margin-top: ($custom-range-track-height - 1.75rem) / 2; // Webkit specific
+    margin-top: ($custom-range-track-height - 1.75rem) * .5; // Webkit specific
     background: $primary str-replace(url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2210%22%20height%3D%228%22%3E%3Cpath%20d%3D%22M10%2C4%2C6%2C0V8ZM0%2C4%2C4%2C0V8Z%22%20style%3D%22fill%3A%23fff%22%2F%3E%3C%2Fsvg%3E"), "#", "%23") no-repeat center;
 
     &:active {

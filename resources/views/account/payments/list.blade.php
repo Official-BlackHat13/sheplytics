@@ -129,7 +129,11 @@
                             </div>
                         </div>
                         <div class="col-auto">
-                            <a href="#" class="btn btn-outline-primary btn-sm invisible">{{ __('Edit') }}</a>
+                            <div class="form-row">
+                                <div class="col">
+                                    <div class="invisible btn d-flex align-items-center btn-sm text-primary">@include('icons.horizontal-menu', ['class' => 'fill-current width-4 height-4'])&#8203;</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -170,7 +174,11 @@
                                 </div>
                             </div>
                             <div class="col-auto">
-                                <a href="{{ route('account.payments.edit', $payment->id) }}" class="btn btn-outline-primary btn-sm">{{ __('Edit') }}</a>
+                                <div class="form-row">
+                                    <div class="col">
+                                        @include('account.payments.partials.menu')
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
